@@ -6,11 +6,11 @@
 @file        : utils.py
 @description : 工具类
 """
+import os
+
 
 def wait_id_click():
     pass
 
 if __name__ == "__main__":
-    ll = ["我", "你", "它"]
-    if '你' in ll:
-        print(ll[ll.index('你')+1::])
+    print(os.path.basename(__file__))
