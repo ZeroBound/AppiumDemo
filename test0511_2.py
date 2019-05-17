@@ -11,6 +11,7 @@
 执行上滑5次，进入下个栏目用从右边到左边滑动
 滑动使用相对坐标，而不是绝对坐标
 """
+import datetime
 import time
 import unittest
 
@@ -29,6 +30,7 @@ class TestExerciseTwo(unittest.TestCase):
         "appActivity": ".view.WelcomeActivityAlias",
         "autoGrantPermissions": True,
         "unicodeKeyboard": True,
+        "automationName": "UiAutomator1",
         "noReset": True
     }
 
@@ -69,6 +71,7 @@ class TestExerciseTwo(unittest.TestCase):
             swipe_up(device, w/2, h*0.8, w/2, h*0.3, num=5)
             # 从右往左滑
             device.swipe(w*0.9, h/2, w*0.1, h/2)
+            print("\n从右往左滑...")
             actual = get_cur_tab_page(device).text
             print("预期: %s ---->实际: %s " % (tab, actual))
             self.assertEqual(tab, actual, "滑动后与实际显示不一致")
@@ -112,9 +115,17 @@ def get_cur_tab_page(driver: WebDriver):
     # cur_focus = "//*[contains(@resource-id, 'indicator')]//*[@class='android.view.View']"
     cur_focus_tab = "//*[contains(@resource-id, 'indicator')]//*[@class='android.view.View']/" \
                     "preceding-sibling::android.widget.TextView"
-    tab, wait_time = '', 20
+    tab, wait_time = WebElement, 20
     try:
+        print("开始等待...")
+        print(datetime.datetime.now().strftime('%Y%m%d_%H%M%S.%f'))
+        # 小米手机滑到到"房产"后，在time.sleep(10) 中应用退出[页面切换加载图片时出现 内存溢出错误]
+        # java.lang.OutOfMemoryError: Failed to allocate a 6616572 byte allocation
+        # with 2149396 free bytes and 2MB until OOM
+        # 查看 adb shell dumpsys meminfo com.xueqiu.android
         time.sleep(10)
+        # 这里需要显示等待，向左滑动后 tab 标签的焦点可能还停留在前一个 tab 上
+        print("10s 之后")
         tab = wait_xpath_element(driver, cur_focus_tab, timeout=wait_time)
     except TimeoutException:
         print("%ds 内未找到当前选中的新闻页标签" % wait_time)

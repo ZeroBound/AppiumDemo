@@ -19,10 +19,9 @@ from appium.webdriver.webdriver import WebDriver
 from selenium.webdriver.support.wait import WebDriverWait
 
 # id
-user_icon = "user_profile_icon"
-login_btn = "tv_login"
 wx_login_btn = "rl_login_by_wx"
 other_login_btn = "tv_login_by_phone_or_others"
+back_btn = "iv_action_back"
 
 
 class TestClass(object):
@@ -31,36 +30,55 @@ class TestClass(object):
     def setup_class(cls):
         print("pytest setup class")
         cls.device = init_driver()
-        wait_element(cls.device, user_icon).click()
+        wait_element(cls.device, "user_profile_icon").click()
 
     def setup_method(self):
         print("pytest setup method")
-        wait_element(self.device, login_btn).click()
+        wait_element(self.device, "tv_login").click()
 
     def teardown_method(self):
         print("\npytest teardown method")
-        self.device.back()
+        # self.device.back()
+        wait_element(self.device, back_btn).click()
 
     @classmethod
     def teardown_class(cls):
         print("pytest teardown class")
         cls.device.quit()
 
-    @allure.story("手机号登录")
-    @pytest.mark.parametrize("username, password", [(17106576889, 1111), (10086, 123456)])
+    @allure.story("手机号或邮箱登录")
+    @pytest.mark.parametrize("username, password", [(17106576889, 1111), (10086, 123456), ("123456@qq.com", 123456)])
     def test_phone(self, username, password):
-        pass
+        login_more, login_acc, login_pwd = "login_more", "login_account", "login_password"
+        login_next = "button_next"
+        msg, ok_btn = "md_content", "md_buttonDefaultPositive"
+        print("手机号或邮箱登录测试")
+        wait_element(self.device, other_login_btn).click()
+        wait_element(self.device, login_more).click()
+        wait_element(self.device, login_acc).send_keys(username)
+        wait_element(self.device, login_pwd).send_keys(password)
+        wait_element(self.device, login_next).click()
+        if wait_element(self.device, ok_btn).is_displayed():
+            if "	请求太频繁，请稍后再试" == wait_element(self.device, msg).text:
+                wait_element(self.device, ok_btn).click()
+                return
+            if len(str(username)) >= 13 or '@' in str(username):
+                assert "用户名或密码错误" == wait_element(self.device, msg).text
+            elif len(str(username)) < 13:
+                assert "手机号码填写错误" == wait_element(self.device, msg).text
+            wait_element(self.device, ok_btn).click()
+        if "	请求太频繁，请稍后再试" == wait_element(self.device, msg).text:
+            wait_element(self.device, ok_btn).click()
 
-    @allure.story("邮箱登录")
-    def test_email(self, email, password):
-        pass
 
     @allure.story("微信登录")
     def test_weixin(self):
+        print("微信登录测试")
         pass
 
     @allure.story("验证码登录")
     def test_verify_code(self):
+        print("验证码登录测试")
         pass
 
 
