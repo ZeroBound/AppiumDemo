@@ -25,7 +25,7 @@ back_btn = "iv_action_back"
 
 
 class TestClass(object):
-    device = WebDriver
+    device: WebDriver
     @classmethod
     def setup_class(cls):
         print("pytest setup class")
@@ -47,8 +47,12 @@ class TestClass(object):
         cls.device.quit()
 
     @allure.story("手机号或邮箱登录")
-    @pytest.mark.parametrize("username, password", [(17106576889, 1111), (10086, 123456), ("123456@qq.com", 123456)])
-    def test_phone(self, username, password):
+    @pytest.mark.parametrize("username, password, msg", [
+        (17106576889, 1111, "用户名或密码错误"),
+        (10086, 123456, "手机号码填写错误"),
+        ("123456@qq.com", 123456, "用户名或密码错误")
+    ])
+    def test_phone(self, username, password, msg):
         login_more, login_acc, login_pwd = "login_more", "login_account", "login_password"
         login_next = "button_next"
         msg, ok_btn = "md_content", "md_buttonDefaultPositive"
@@ -58,19 +62,13 @@ class TestClass(object):
         wait_element(self.device, login_acc).send_keys(username)
         wait_element(self.device, login_pwd).send_keys(password)
         wait_element(self.device, login_next).click()
-        if wait_element(self.device, ok_btn).is_displayed():
-            if "	请求太频繁，请稍后再试" == wait_element(self.device, msg).text:
-                wait_element(self.device, ok_btn).click()
-                return
-            if len(str(username)) >= 13 or '@' in str(username):
-                assert "用户名或密码错误" == wait_element(self.device, msg).text
-            elif len(str(username)) < 13:
-                assert "手机号码填写错误" == wait_element(self.device, msg).text
-            wait_element(self.device, ok_btn).click()
         if "	请求太频繁，请稍后再试" == wait_element(self.device, msg).text:
             wait_element(self.device, ok_btn).click()
+        else:
+            assert msg == wait_element(self.device, msg).text
+            wait_element(self.device, ok_btn).click()
 
-
+    @allure.title("")
     @allure.story("微信登录")
     def test_weixin(self):
         print("微信登录测试")
