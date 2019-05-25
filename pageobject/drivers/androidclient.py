@@ -11,7 +11,7 @@ from appium.webdriver.webdriver import WebDriver
 
 
 class AndroidClient(object):
-    # driver: WebDriver
+    driver: WebDriver
     @classmethod
     def init_driver(cls) -> WebDriver:
         caps = {
