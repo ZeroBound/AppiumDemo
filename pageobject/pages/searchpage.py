@@ -6,8 +6,71 @@
 @file        : searchpage.py
 @description : 搜索页面
 """
+from selenium.webdriver.common.by import By
+
 from AppiumDemo.pageobject.pages.basepage import BasePage
 
 
 class SearchPage(BasePage):
-    pass
+    __item_child = "//*[contains(@resource-id, '{0}') and contains(@text, '{1}')]/ancestor::*[{2}]" \
+                  "//*[contains(@resource-id, '{3}')]"
+
+    def getStockBtn(self, name, follow_id):
+        return self.__item_child.format("stockCode", name, 3, follow_id)
+
+    def getUserBtn(self, name, follow_id):
+        return self.__item_child.format("user_name", name, 2, follow_id)
+
+    def cancelSearch(self):
+        from AppiumDemo.pageobject.pages.mainpage import MainPage
+        self.findById("action_close").click()
+        return MainPage()
+
+    def searchFor(self, key):
+        _edit_text = (By.CLASS_NAME, "android.widget.EditText")
+        self.find(_edit_text).send_keys(key)
+        return self
+
+    def gotoResFor(self, name="综合"):
+        self.findByText(name).click()
+        import time
+        time.sleep(3)
+        return self
+
+    def addToSelected(self, name):
+        follow_btn = (By.XPATH, self.getStockBtn(name, "/follow_btn"))
+        self.find(follow_btn).click()
+        return self
+
+    def isInSelected(self, name):
+        follow = (By.XPATH, self.getStockBtn(name, "/follow"))
+        res = self.find(follow).get_attribute('resourceId')
+        print(res)
+        return 'followed_btn' in res
+
+    def removeFromSelected(self, name):
+        followed_btn = (By.XPATH, self.getStockBtn(name, "/followed_btn')]"))
+        self.find(followed_btn).click()
+        return self
+
+    def gotoResByUser(self):
+        return self.gotoResFor("用户")
+
+    def addFollow(self, name):
+        uesr_follow = (By.XPATH, self.getUserBtn(name, "/follow_btn"))
+        self.find(uesr_follow).click()
+        return self
+
+    def removeFollow(self, name):
+        uesr_followed = (By.XPATH, self.getUserBtn(name, "/followed_btn"))
+        self.find(uesr_followed).click()
+        return self
+
+    def isFollow(self, name):
+        follow = (By.XPATH, self.getUserBtn(name, "/follow"))
+        res = self.find(follow).get_attribute('resourceId')
+        print(res)
+        return 'followed_btn' in res
+
+
+

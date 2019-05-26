@@ -8,6 +8,7 @@
 """
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
+from selenium.webdriver.support.wait import WebDriverWait
 
 from AppiumDemo.pageobject.drivers.androidclient import AndroidClient
 
@@ -17,8 +18,11 @@ class BasePage(object):
         self._driver = AndroidClient.driver
 
     # 通用的查找方式
-    def find(self, kv) -> WebElement:
-        return self._driver.find_element(*kv)
+    def find(self, kv, timeout=10) -> WebElement:
+        return WebDriverWait(self._driver, timeout).until(lambda x: x.find_element(*kv))
 
     def findByText(self, text) -> WebElement:
-        return self.find((By.XPATH, "//*[@text=%s]" % text))
+        return self.find((By.XPATH, "//*[@text='%s']" % text))
+
+    def findById(self, resId) -> WebElement:
+        return self.find((By.ID, "%s" % resId))
