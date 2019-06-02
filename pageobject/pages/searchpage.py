@@ -6,6 +6,7 @@
 @file        : searchpage.py
 @description : 搜索页面
 """
+import time
 from selenium.webdriver.common.by import By
 
 from AppiumDemo.pageobject.pages.basepage import BasePage
@@ -33,13 +34,13 @@ class SearchPage(BasePage):
 
     def gotoResFor(self, name="综合"):
         self.findByText(name).click()
-        import time
         time.sleep(3)
         return self
 
     def addToSelected(self, name):
         follow_btn = (By.XPATH, self.getStockBtn(name, "/follow_btn"))
         self.find(follow_btn).click()
+        self.hasTipMsg()
         return self
 
     def isInSelected(self, name):
@@ -49,7 +50,7 @@ class SearchPage(BasePage):
         return 'followed_btn' in res
 
     def removeFromSelected(self, name):
-        followed_btn = (By.XPATH, self.getStockBtn(name, "/followed_btn')]"))
+        followed_btn = (By.XPATH, self.getStockBtn(name, "/followed_btn"))
         self.find(followed_btn).click()
         return self
 
@@ -66,11 +67,17 @@ class SearchPage(BasePage):
         self.find(uesr_followed).click()
         return self
 
-    def isFollow(self, name):
+    def isFollowed(self, name):
         follow = (By.XPATH, self.getUserBtn(name, "/follow"))
         res = self.find(follow).get_attribute('resourceId')
         print(res)
         return 'followed_btn' in res
 
+    def hasTipMsg(self):
+        tip_close_id = "md_buttonDefaultNegative"
+        for i in range(3):
+            time.sleep(1)
+            if self.hasInfo(tip_close_id):
+                self.findById(tip_close_id).click()
 
 

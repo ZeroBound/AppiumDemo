@@ -16,6 +16,9 @@ from AppiumDemo.pageobject.drivers.androidclient import AndroidClient
 class BasePage(object):
     def __init__(self):
         self._driver = AndroidClient.driver
+        self.hw = self._driver.get_window_size()
+        self.width = self.hw['width']
+        self.height = self.hw['height']
 
     # 通用的查找方式
     def find(self, kv, timeout=10) -> WebElement:
@@ -26,3 +29,18 @@ class BasePage(object):
 
     def findById(self, resId) -> WebElement:
         return self.find((By.ID, "%s" % resId))
+
+    def hasInfo(self, resId):
+        page_source = self._driver.page_source
+        print(page_source)
+        return resId in page_source
+
+    def swipeUp(self, sx=.5, sy=.9, ex=.5, ey=.1):
+        self._driver.swipe(self.width*sx, self.height*sy, self.width*ex, self.height*ey)
+
+    def swipeDown(self, sx=.5, sy=.1, ex=.5, ey=.9):
+        self._driver.swipe(self.width*sx, self.height*sy, self.width*ex, self.height*ey)
+
+    def getDisplayedHW(self):
+        hw = self._driver.get_window_size()
+        return hw["width"], hw["height"]

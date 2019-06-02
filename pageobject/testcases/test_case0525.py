@@ -21,24 +21,30 @@ class TestCase0525(object):
 
     def test_price(self):
         price = self.main_page.gotoOptional().gotoHuS().getPriceName("格力电器")
-        assert 53.90 == price
+        assert 52.31 == price
         self.main_page.gotoHome()
 
     def test_stock_index(self):
         index = self.main_page.gotoMarketPrices().gotoHuS().getStockIndex("深证成指")
-        assert index >= 3000
+        assert index >= 8000
         self.main_page.gotoHome()
 
     def test_is_selected_stock(self):
+        tag = "00241"
         searchPage = self.main_page.gotoSearch().searchFor("ali").gotoResFor()
-        searchPage.addToSelected("00241")
-        assert searchPage.isInSelected("00241")
+        if searchPage.isInSelected(tag):
+            searchPage.removeFromSelected(tag)
+        searchPage.addToSelected(tag)
+        assert searchPage.isInSelected(tag)
         assert not searchPage.isInSelected("BABA")
         searchPage.cancelSearch()
 
     def test_is_follow_user(self):
+        tag = "zzw_"
         searchPage = self.main_page.gotoSearch().searchFor("zzw").gotoResByUser()
-        searchPage.addFollow("zzw_")
-        assert searchPage.isFollow("zzw_")
-        assert not searchPage.isFollow("zzw")
+        if searchPage.isFollowed(tag):
+            searchPage.removeFollow(tag)
+        searchPage.addFollow(tag)
+        assert searchPage.isFollowed(tag)
+        assert not searchPage.isFollowed("zzwen")
         searchPage.cancelSearch()

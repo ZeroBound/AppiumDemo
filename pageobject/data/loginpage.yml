@@ -1,0 +1,8 @@
+loginByPassword:
+  - locator: tv_login_by_phone_or_others
+    by: id
+    action: click
+  - locator: register_code_text
+    by: id
+    action: sendKeys
+    text: $phone

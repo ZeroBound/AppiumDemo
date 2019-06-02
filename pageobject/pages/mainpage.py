@@ -9,11 +9,14 @@
 from selenium.webdriver.common.by import By
 
 from AppiumDemo.pageobject.pages.basepage import BasePage
+from AppiumDemo.pageobject.pages.profilepage import ProfilePage
 from AppiumDemo.pageobject.pages.searchpage import SearchPage
 from AppiumDemo.pageobject.pages.selectedpage import SelectedPage
 
 
 class MainPage(BasePage):
+    _profile_button = (By.ID, "user_profile_icon")
+    _search_button = (By.ID, "home_search")
 
     def isInMainPage(self):
         pass
@@ -26,6 +29,7 @@ class MainPage(BasePage):
         self._gotoTab("行情")
         import time
         time.sleep(5)
+        self.handleTipsInMarket()
         return SelectedPage()
 
     def gotoHome(self):
@@ -39,3 +43,11 @@ class MainPage(BasePage):
 
     def _gotoTab(self, tab):
         self.findByText(tab).click()
+
+    def handleTipsInMarket(self):
+        if self.hasInfo("tips_wrapper"):
+            self.swipeDown()
+
+    def gotoProfile(self):
+        self.find(MainPage._profile_button).click()
+        return ProfilePage()
